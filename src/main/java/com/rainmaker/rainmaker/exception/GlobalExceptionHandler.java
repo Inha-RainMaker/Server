@@ -2,7 +2,7 @@ package com.rainmaker.rainmaker.exception;
 
 import com.rainmaker.rainmaker.dto.common.ErrorResponse;
 import com.rainmaker.rainmaker.exception.common.CustomException;
-import jakarta.validation.ConstraintViolationException;
+import javax.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;

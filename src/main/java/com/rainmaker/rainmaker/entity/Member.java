@@ -1,12 +1,13 @@
 package com.rainmaker.rainmaker.entity;
 
 import com.rainmaker.rainmaker.entity.base.BaseTimeEntity;
-import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
+import javax.persistence.*;
 
 @Entity
 @Getter

@@ -9,8 +9,6 @@ import com.rainmaker.rainmaker.repository.MajorRepository;
 import com.rainmaker.rainmaker.repository.MemberRepository;
 import com.rainmaker.rainmaker.security.JwtTokenProvider;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Commit;
@@ -21,7 +19,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest
 @Transactional
 @Commit
-@ExtendWith(MockitoExtension.class)
 public class AuthServiceTest {
 
     @Autowired
