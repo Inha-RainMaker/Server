@@ -15,7 +15,7 @@ public class MajorDto {
         this.department = department;
     }
 
-    public Major of(){
+    public Major toEntity(){
         return new Major(
                 this.getName(),
                 this.getDepartment()

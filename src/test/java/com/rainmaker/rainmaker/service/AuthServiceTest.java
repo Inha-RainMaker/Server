@@ -5,37 +5,45 @@ import com.rainmaker.rainmaker.dto.MemberSignUpDto;
 import com.rainmaker.rainmaker.entity.Gender;
 import com.rainmaker.rainmaker.entity.Major;
 import com.rainmaker.rainmaker.entity.Member;
+import com.rainmaker.rainmaker.exception.member.MemberPKNotFoundException;
+import com.rainmaker.rainmaker.repository.MajorRepository;
+import com.rainmaker.rainmaker.repository.MemberRepository;
+import com.rainmaker.rainmaker.security.JwtTokenProvider;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.annotation.Commit;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 
 @SpringBootTest
 @Transactional
 @Commit
+@ExtendWith(MockitoExtension.class)
 public class AuthServiceTest {
 
     @Autowired
     private AuthService authService;
 
     @Autowired
-    private EntityManager em;
+    private MemberRepository memberRepository;
 
     @Autowired
-    private PasswordEncoder passwordEncoder;
+    private MajorRepository majorRepository;
+    @Autowired
+    private JwtTokenProvider jwtTokenProvider;
 
     @Test
-    public void 회원가입() throws Exception{
+    public void 회원가입() throws Exception {
         //given
         Major major = new Major("컴퓨터공학과", "소프트웨어융합대학");
-        em.persist(major);
-
-        MajorDto majorDto = MajorDto.from(major);
+        majorRepository.save(major);
 
         MemberSignUpDto memberSignUpDto = MemberSignUpDto.builder()
                 .gender(Gender.FEMALE)
@@ -43,34 +51,19 @@ public class AuthServiceTest {
                 .nickName("별명1")
                 .password("1234")
                 .checkedPassword("1234")
-                .email("1111@naver.com")
                 .grade(2)
+                .phone("010-1234-1234")
                 .build();
         memberSignUpDto.setMajorDto(major);
 
         //when
         Long savedMemberId = authService.signUp(memberSignUpDto);
-        Member findMember = em.createQuery("select m from Member m where m.id = :memberId", Member.class)
-                .setParameter("memberId", savedMemberId)
-                .getSingleResult();
+        Member findMember = memberRepository.findById(savedMemberId)
+                .orElseThrow(MemberPKNotFoundException::new);
 
         //then
         assertThat(findMember.getId()).isEqualTo(savedMemberId);
     }
 
-    // TODO 추후 로그인 구현 시 테스트 코드 작성 필요
-    @Test
-    public void 비밀번호_일치_검증() throws Exception{
-        //given
-        
-        
-        //when
-        
-        //then
-//        if(passwordEncoder.matches(newPwd, originPwd){
-//            System.out.println("true");
-//        } else {
-//            System.out.println("false");
-//        }
-    }
+
 }

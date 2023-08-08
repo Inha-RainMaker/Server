@@ -5,19 +5,23 @@ import lombok.Data;
 
 @Data
 public class MemberDto {
+    private Long id;
     private String userName;
     private String nickName;
+    private String password;
 
-    public MemberDto(String userName, String nickName) {
+    public MemberDto(Long id, String userName, String nickName, String password) {
+        this.id = id;
         this.userName = userName;
         this.nickName = nickName;
+        this.password = password;
     }
 
-    public static MemberDto of(String userName, String nickName){
-        return new MemberDto(userName, nickName);
+    public static MemberDto of(Long id, String userName, String nickName, String password) {
+        return new MemberDto(id, userName, nickName, password);
     }
 
-    public static MemberDto from(Member member){
-        return MemberDto.of(member.getName(), member.getNickName());
+    public static MemberDto from(Member member) {
+        return MemberDto.of(member.getId(), member.getName(), member.getNickName(), member.getPassword());
     }
 }

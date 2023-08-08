@@ -5,6 +5,7 @@ import com.rainmaker.rainmaker.entity.Major;
 import com.rainmaker.rainmaker.entity.Member;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Null;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Getter;
@@ -22,14 +23,14 @@ public class MemberSignUpDto {
     @Size(min=2, message = "별명이 너무 짧습니다.")
     private String nickName;
 
-    @NotBlank(message = "이메일을 입력해주세요")
-    private String email;
 
     @NotBlank(message = "비밀번호를 입력해주세요")
     private String password;
 
     @NotBlank(message = "비밀번호를 다시 한번 입력해주세요")
     private String checkedPassword;
+
+    private String phone;
 
     @NotNull(message = "학년을 입력해주세요")
     private int grade;
@@ -45,6 +46,7 @@ public class MemberSignUpDto {
                 .grade(this.getGrade())
                 .gender(this.getGender())
                 .nickName(this.getNickName())
+                .phone(this.getPhone())
                 .major(major)
                 .build();
     }
