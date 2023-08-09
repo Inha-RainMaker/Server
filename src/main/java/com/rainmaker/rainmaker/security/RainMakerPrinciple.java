@@ -1,6 +1,6 @@
 package com.rainmaker.rainmaker.security;
 
-import com.rainmaker.rainmaker.dto.MemberDto;
+import com.rainmaker.rainmaker.dto.member.MemberDto;
 import com.rainmaker.rainmaker.entity.Role;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

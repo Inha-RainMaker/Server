@@ -1,4 +1,4 @@
-package com.rainmaker.rainmaker.dto;
+package com.rainmaker.rainmaker.dto.member;
 
 
 import lombok.Data;

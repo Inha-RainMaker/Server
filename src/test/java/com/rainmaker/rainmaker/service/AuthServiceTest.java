@@ -1,6 +1,7 @@
 package com.rainmaker.rainmaker.service;
 
-import com.rainmaker.rainmaker.dto.MemberSignUpDto;
+import com.rainmaker.rainmaker.dto.major.MajorDto;
+import com.rainmaker.rainmaker.dto.member.MemberDto;
 import com.rainmaker.rainmaker.entity.Gender;
 import com.rainmaker.rainmaker.entity.Major;
 import com.rainmaker.rainmaker.entity.Member;
@@ -38,19 +39,11 @@ public class AuthServiceTest {
         Major major = new Major("컴퓨터공학과", "소프트웨어융합대학");
         majorRepository.save(major);
 
-        MemberSignUpDto memberSignUpDto = MemberSignUpDto.builder()
-                .gender(Gender.FEMALE)
-                .name("member1")
-                .nickName("별명1")
-                .password("1234")
-                .checkedPassword("1234")
-                .grade(2)
-                .phone("010-1234-1234")
-                .build();
-        memberSignUpDto.setMajorDto(major);
+        MemberDto memberDto = MemberDto.of("홍길동", "천방지축 도사", "1234",
+                "010-1234-1234", 1, Gender.MALE, MajorDto.from(major));
 
         //when
-        Long savedMemberId = authService.signUp(memberSignUpDto);
+        Long savedMemberId = authService.signUp(memberDto);
         Member findMember = memberRepository.findById(savedMemberId)
                 .orElseThrow(MemberPKNotFoundException::new);
 

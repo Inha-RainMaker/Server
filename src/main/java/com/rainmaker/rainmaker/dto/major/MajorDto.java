@@ -1,4 +1,4 @@
-package com.rainmaker.rainmaker.dto;
+package com.rainmaker.rainmaker.dto.major;
 
 import com.rainmaker.rainmaker.entity.Major;
 import lombok.Getter;
@@ -15,14 +15,11 @@ public class MajorDto {
         this.department = department;
     }
 
-    public Major toEntity(){
-        return new Major(
-                this.getName(),
-                this.getDepartment()
-        );
+    public static MajorDto from(Major major) {
+        return new MajorDto(major.getName(), major.getDepartment());
     }
 
-    public static MajorDto from(Major major){
-        return new MajorDto(major.getName(), major.getDepartment());
+    public static MajorDto of(String name, String department) {
+        return new MajorDto(name, department);
     }
 }
