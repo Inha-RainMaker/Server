@@ -4,6 +4,8 @@ import com.rainmaker.rainmaker.dto.member.MemberDto;
 import com.rainmaker.rainmaker.dto.member.request.MemberFormRequest;
 import com.rainmaker.rainmaker.entity.Major;
 import com.rainmaker.rainmaker.entity.Member;
+import com.rainmaker.rainmaker.exception.auth.JwtUnauthroziedException;
+import com.rainmaker.rainmaker.exception.member.NickNameNotFoundException;
 import com.rainmaker.rainmaker.repository.MajorRepository;
 import com.rainmaker.rainmaker.repository.MemberRepository;
 import com.rainmaker.rainmaker.security.JwtTokenProvider;
@@ -48,7 +50,26 @@ public class AuthService {
      * @param nickName 로그인하려는 사용자의 nickName
      * @return 생성된 JWT token
      */
-    public String login(String nickName) {
+    public String createToken(String nickName) {
         return jwtTokenProvider.createToken(nickName);
+    }
+
+    /**
+     * 로그인하려는 회원의 아이디(닉네임)과 비밀번호를 입력받아 로그인 정보를 검증한다.
+     * 로그인에 성공하면 JWT token 을 생성하여 반환한다.
+     *
+     * @param nickName 로그인하려는 사용자의 nickName
+     * @param password 로그인하려는 사용자의 비밀번호
+     * @return 생성된 JWT token
+     */
+    public String login(String nickName, String password) {
+        Member member = memberRepository.findByNickName(nickName)
+                .orElseThrow(NickNameNotFoundException::new);
+
+        if (passwordEncoder.matches(password, member.getPassword())) {
+            return createToken(nickName);
+        } else {
+            throw new JwtUnauthroziedException();
+        }
     }
 }

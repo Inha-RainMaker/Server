@@ -12,6 +12,7 @@ import com.rainmaker.rainmaker.security.JwtTokenProvider;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.annotation.Commit;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,6 +33,8 @@ public class AuthServiceTest {
     private MajorRepository majorRepository;
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Test
     public void 유저정보가_주어지면_회원가입을_수행한다() throws Exception {
@@ -39,7 +42,7 @@ public class AuthServiceTest {
         Major major = new Major("컴퓨터공학과", "소프트웨어융합대학");
         majorRepository.save(major);
 
-        MemberDto memberDto = MemberDto.of("홍길동", "천방지축 도사", "1234",
+        MemberDto memberDto = MemberDto.of("홍길동", "천방지축 도사", "password1!",
                 "010-1234-1234", 1, Gender.MALE, MajorDto.from(major));
 
         //when
@@ -58,7 +61,7 @@ public class AuthServiceTest {
         String createdToken = jwtTokenProvider.createToken(nickName);
 
         //when
-        String result = authService.login(nickName);
+        String result = authService.createToken(nickName);
 
         //then
         System.out.println("createdToken = " + createdToken);
@@ -66,5 +69,24 @@ public class AuthServiceTest {
         assertThat(result).isEqualTo(createdToken);
     }
 
+    @Test
+    public void 유저네임과_비밀번호가_주어지면_로그인을_수행한다() throws Exception {
+        //given
+        Major major = new Major("컴퓨터공학과", "소프트웨어융합대학");
+        majorRepository.save(major);
 
+        MemberDto memberDto = MemberDto.of("홍길동", "천방지축 도사", "password1!",
+                "010-1234-1234", 1, Gender.MALE, MajorDto.from(major));
+
+        Long savedMemberId = authService.signUp(memberDto);
+
+        String nickName = "천방지축 도사";
+        String password = "password1!";
+
+        //when
+        String jwtToken = authService.login(nickName, password);
+
+        //then
+        System.out.println("jwtToken = " + jwtToken);
+    }
 }
