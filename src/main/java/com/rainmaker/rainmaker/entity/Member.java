@@ -1,12 +1,13 @@
 package com.rainmaker.rainmaker.entity;
 
 import com.rainmaker.rainmaker.entity.base.BaseTimeEntity;
-import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
+import javax.persistence.*;
 
 @Entity
 @Getter
@@ -14,7 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 public class Member extends BaseTimeEntity {
 
     @Builder
-    public Member(Major major, String password, String name, String nickName, int grade, Gender gender, Role role) {
+    public Member(Major major, String password, String name, String nickName, int grade, Gender gender, Role role, String phone) {
         this.major = major;
         this.password = password;
         this.name = name;
@@ -22,6 +23,7 @@ public class Member extends BaseTimeEntity {
         this.grade = grade;
         this.gender = gender;
         this.role = role;
+        this.phone = phone;
     }
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)

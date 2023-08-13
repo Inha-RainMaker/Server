@@ -1,8 +1,10 @@
 package com.rainmaker.rainmaker.entity;
 
-import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import javax.persistence.*;
 
 @Entity
 @Getter
@@ -18,6 +20,7 @@ public class Major {
 
     private String department;
 
+    @Builder
     public Major(String name, String department) {
         this.name = name;
         this.department = department;

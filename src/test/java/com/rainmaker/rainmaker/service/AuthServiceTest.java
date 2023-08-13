@@ -1,11 +1,14 @@
 package com.rainmaker.rainmaker.service;
 
-import com.rainmaker.rainmaker.dto.MajorDto;
-import com.rainmaker.rainmaker.dto.MemberSignUpDto;
+import com.rainmaker.rainmaker.dto.major.MajorDto;
+import com.rainmaker.rainmaker.dto.member.MemberDto;
 import com.rainmaker.rainmaker.entity.Gender;
 import com.rainmaker.rainmaker.entity.Major;
 import com.rainmaker.rainmaker.entity.Member;
-import jakarta.persistence.EntityManager;
+import com.rainmaker.rainmaker.exception.member.MemberPKNotFoundException;
+import com.rainmaker.rainmaker.repository.MajorRepository;
+import com.rainmaker.rainmaker.repository.MemberRepository;
+import com.rainmaker.rainmaker.security.JwtTokenProvider;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -24,53 +27,66 @@ public class AuthServiceTest {
     private AuthService authService;
 
     @Autowired
-    private EntityManager em;
+    private MemberRepository memberRepository;
 
+    @Autowired
+    private MajorRepository majorRepository;
+    @Autowired
+    private JwtTokenProvider jwtTokenProvider;
     @Autowired
     private PasswordEncoder passwordEncoder;
 
     @Test
-    public void 회원가입() throws Exception{
+    public void 유저정보가_주어지면_회원가입을_수행한다() throws Exception {
         //given
         Major major = new Major("컴퓨터공학과", "소프트웨어융합대학");
-        em.persist(major);
+        majorRepository.save(major);
 
-        MajorDto majorDto = MajorDto.from(major);
-
-        MemberSignUpDto memberSignUpDto = MemberSignUpDto.builder()
-                .gender(Gender.FEMALE)
-                .name("member1")
-                .nickName("별명1")
-                .password("1234")
-                .checkedPassword("1234")
-                .email("1111@naver.com")
-                .grade(2)
-                .build();
-        memberSignUpDto.setMajorDto(major);
+        MemberDto memberDto = MemberDto.of("홍길동", "천방지축 도사", "password1!",
+                "010-1234-1234", 1, Gender.MALE, MajorDto.from(major));
 
         //when
-        Long savedMemberId = authService.signUp(memberSignUpDto);
-        Member findMember = em.createQuery("select m from Member m where m.id = :memberId", Member.class)
-                .setParameter("memberId", savedMemberId)
-                .getSingleResult();
+        Long savedMemberId = authService.signUp(memberDto);
+        Member findMember = memberRepository.findById(savedMemberId)
+                .orElseThrow(MemberPKNotFoundException::new);
 
         //then
         assertThat(findMember.getId()).isEqualTo(savedMemberId);
     }
 
-    // TODO 추후 로그인 구현 시 테스트 코드 작성 필요
     @Test
-    public void 비밀번호_일치_검증() throws Exception{
+    public void 닉네임이_주어지면_jwt토큰을_생성한다() {
         //given
-        
-        
+        String nickName = "별명1";
+        String createdToken = jwtTokenProvider.createToken(nickName);
+
         //when
-        
+        String result = authService.createToken(nickName);
+
         //then
-//        if(passwordEncoder.matches(newPwd, originPwd){
-//            System.out.println("true");
-//        } else {
-//            System.out.println("false");
-//        }
+        System.out.println("createdToken = " + createdToken);
+        System.out.println("result = " + result);
+        assertThat(result).isEqualTo(createdToken);
+    }
+
+    @Test
+    public void 유저네임과_비밀번호가_주어지면_로그인을_수행한다() throws Exception {
+        //given
+        Major major = new Major("컴퓨터공학과", "소프트웨어융합대학");
+        majorRepository.save(major);
+
+        MemberDto memberDto = MemberDto.of("홍길동", "천방지축 도사", "password1!",
+                "010-1234-1234", 1, Gender.MALE, MajorDto.from(major));
+
+        Long savedMemberId = authService.signUp(memberDto);
+
+        String nickName = "천방지축 도사";
+        String password = "password1!";
+
+        //when
+        String jwtToken = authService.login(nickName, password);
+
+        //then
+        System.out.println("jwtToken = " + jwtToken);
     }
 }
