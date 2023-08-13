@@ -32,7 +32,7 @@ public class SecurityConfig {
             "/swagger-ui/**",
             "/v3/api-docs/**",
             "/actuator/**",
-            "/app/auth/local/new" // 회원가입 api 에 접속하기 위해 인증 제외하기 위해 추가
+            "/app/auth/local/**" // 회원가입 api 및 로그인 api에 접속하기 위해 인증 제외하기 위해 추가
     };
 
     @Bean
