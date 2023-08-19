@@ -19,17 +19,17 @@ public class Chat extends BaseTimeEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @NotNull
+    @JoinColumn(name = "chatroom_id")
     private Chatroom chatroom;
 
     @OneToOne(fetch = FetchType.LAZY)
     @NotNull
-    @Column(name = "sender_id")
+    @JoinColumn(name = "sender_id")
     private Member sender;
 
     @OneToOne(fetch = FetchType.LAZY)
     @NotNull
-    @Column(name = "receiver_id")
+    @JoinColumn(name = "receiver_id")
     private Member receiver;
 
     @NotNull
