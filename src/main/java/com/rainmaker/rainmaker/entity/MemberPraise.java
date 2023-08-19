@@ -18,17 +18,17 @@ public class MemberPraise extends BaseTimeEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @Column(name = "praise_id")
+    @JoinColumn(name = "praise_id")
     @NotNull
     private Praise praise;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @Column(name = "receiver_id")
+    @JoinColumn(name = "receiver_id")
     @NotNull
     private Member receiver;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @Column(name = "sender_id")
+    @JoinColumn(name = "sender_id")
     @NotNull
     private Member sender;
 }
