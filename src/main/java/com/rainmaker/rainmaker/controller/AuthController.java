@@ -57,7 +57,6 @@ public class AuthController {
     public ResponseEntity<DataResponse<MemberLoginResponse>> login(
             @Valid @RequestBody MemberLoginRequest memberLoginRequest
     ) {
-        // TODO 유저의 아이디, 비밀번호 검증하고 jwt access token 받아오기
         String jwtToken = authService.login(memberLoginRequest.getNickName(), memberLoginRequest.getPassword());
 
         MemberLoginResponse response = MemberLoginResponse.of(jwtToken);
