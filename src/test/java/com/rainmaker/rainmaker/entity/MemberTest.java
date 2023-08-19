@@ -1,10 +1,11 @@
 package com.rainmaker.rainmaker.entity;
 
-import javax.persistence.EntityManager;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.persistence.EntityManager;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -22,7 +23,7 @@ class MemberTest {
         em.persist(major);
 
         Member member = Member.builder()
-                .name("유저1")
+                .userName("유저1")
                 .nickName("별명1")
                 .grade(1)
                 .gender(Gender.FEMALE)
