@@ -32,14 +32,14 @@ public class MemberDto {
 
     public static MemberDto from(Member member) {
         return MemberDto.of(
-                member.getId(), member.getName(), member.getNickName(), member.getPassword(),
+                member.getId(), member.getUserName(), member.getNickName(), member.getPassword(),
                 member.getPhone(), member.getGrade(), member.getGender(), MajorDto.from(member.getMajor()));
     }
 
     public Member toEntity(Major major) {
         return Member.builder()
                 .major(major)
-                .name(getUserName())
+                .userName(getUserName())
                 .nickName(getNickName())
                 .password(getPassword())
                 .grade(getGrade())
