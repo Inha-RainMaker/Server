@@ -12,15 +12,12 @@ import com.rainmaker.rainmaker.security.JwtTokenProvider;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.test.annotation.Commit;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @Transactional
-@Commit
 public class AuthServiceTest {
 
     @Autowired
@@ -33,8 +30,6 @@ public class AuthServiceTest {
     private MajorRepository majorRepository;
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
 
     @Test
     public void 유저정보가_주어지면_회원가입을_수행한다() throws Exception {
