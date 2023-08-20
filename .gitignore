@@ -8,6 +8,9 @@ build/
 ### Secret ###
 !**/src/main/**/resources/application.yml
 
+### Data ###
+*.sql
+
 ### log ###
 *.log
 

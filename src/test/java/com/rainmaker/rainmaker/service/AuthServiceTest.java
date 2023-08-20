@@ -11,6 +11,8 @@ import com.rainmaker.rainmaker.repository.MemberRepository;
 import com.rainmaker.rainmaker.security.JwtTokenProvider;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @Transactional
+@AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
 public class AuthServiceTest {
 
     @Autowired
@@ -34,8 +37,7 @@ public class AuthServiceTest {
     @Test
     public void 유저정보가_주어지면_회원가입을_수행한다() throws Exception {
         //given
-        Major major = new Major("컴퓨터공학과", "소프트웨어융합대학");
-        majorRepository.save(major);
+        Major major = majorRepository.findByName("컴퓨터공학과");
 
         MemberDto memberDto = MemberDto.of("홍길동", "천방지축 도사", "password1!",
                 "010-1234-1234", 1, Gender.MALE, MajorDto.from(major));
@@ -67,9 +69,7 @@ public class AuthServiceTest {
     @Test
     public void 유저네임과_비밀번호가_주어지면_로그인을_수행한다() throws Exception {
         //given
-        Major major = new Major("컴퓨터공학과", "소프트웨어융합대학");
-        majorRepository.save(major);
-
+        Major major = majorRepository.findByName("컴퓨터공학과");
         MemberDto memberDto = MemberDto.of("홍길동", "천방지축 도사", "password1!",
                 "010-1234-1234", 1, Gender.MALE, MajorDto.from(major));
 
