@@ -4,23 +4,65 @@ jwt:
   secret:
     key: ${JWT_SECRET_KEY}
 
+logging.level:
+  org.hibernate.SQL: debug
+  org.hibernate.type: trace
+
 spring:
   profiles:
-    active: local
+    default: local # 기본환경을 local로 설정
+  jpa:
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+        use_sql_comments: true
+        default_batch_fetch_size: 100
+
+---
+# Settings for local
+spring:
+  config:
+    activate:
+      on-profile: local
   datasource:
-    url: jdbc:h2:tcp://localhost/~/rainmaker
+    url: ${RAINMAKER_LOCAL_DB_URL}
+    username: ${RAINMAKER_LOCAL_DB_USERNAME}
+    password: ${RAINMAKER_LOCAL_DB_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create
+    defer-datasource-initialization: true
+  sql.init.mode: always
+
+---
+# Settings for prod
+spring:
+  config:
+    activate:
+      on-profile: prod
+  datasource:
+    url: ${RAINMAKER_PROD_DB_URL}
+    username: ${RAINMAKER_PROD_DB_USERNAME}
+    password: ${RAINMAKER_PROD_DB_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create
+
+---
+# Settings for test
+spring:
+  config:
+    activate:
+      on-profile: test
+  datasource:
+    url: jdbc:h2:mem:testdb
     username: sa
     password:
     driver-class-name: org.h2.Driver
   jpa:
-    hibernate:
-      ddl-auto: create
-    properties:
-      hibernate:
-#        show_sql: true
-        format_sql: true
-        use_sql_comments: true
-
-logging.level:
-  org.hibernate.SQL: debug
-  org.hibernate.type: trace
+    hibernate.ddl-auto: create
+    defer-datasource-initialization: true
+  sql.init.mode: always
