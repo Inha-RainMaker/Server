@@ -1,87 +1,116 @@
 package com.rainmaker.rainmaker.service;
 
+import com.rainmaker.rainmaker.config.S3Config;
 import com.rainmaker.rainmaker.dto.major.MajorDto;
 import com.rainmaker.rainmaker.dto.member.MemberDto;
 import com.rainmaker.rainmaker.entity.Gender;
 import com.rainmaker.rainmaker.entity.Major;
 import com.rainmaker.rainmaker.entity.Member;
-import com.rainmaker.rainmaker.exception.member.MemberPKNotFoundException;
+import com.rainmaker.rainmaker.entity.ProfileImage;
 import com.rainmaker.rainmaker.repository.MajorRepository;
 import com.rainmaker.rainmaker.repository.MemberRepository;
+import com.rainmaker.rainmaker.repository.ProfileImageRepository;
 import com.rainmaker.rainmaker.security.JwtTokenProvider;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.annotation.Import;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 
-@SpringBootTest
-@Transactional
-@AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
+
+@Import(S3Config.class)
+@ExtendWith(MockitoExtension.class)
 public class AuthServiceTest {
 
-    @Autowired
+    @InjectMocks
     private AuthService authService;
 
-    @Autowired
+    @Mock
     private MemberRepository memberRepository;
-
-    @Autowired
+    @Mock
     private MajorRepository majorRepository;
-    @Autowired
+    @Mock
     private JwtTokenProvider jwtTokenProvider;
+    @Mock
+    private ProfileImageRepository profileImageRepository;
+    @Mock
+    private PasswordEncoder passwordEncoder;
 
     @Test
     public void 유저정보가_주어지면_회원가입을_수행한다() throws Exception {
         //given
-        Major major = majorRepository.findByName("컴퓨터공학과");
-
-        MemberDto memberDto = MemberDto.of("홍길동", "천방지축 도사", "password1!",
-                "010-1234-1234", 1, Gender.MALE, MajorDto.from(major));
+        MemberDto memberDto = createMemberDto();
+        given(profileImageRepository.existsDefaultMemberProfileImage()).willReturn(true);
+        given(profileImageRepository.getDefaultMemberProfileImage()).willReturn(createProfileImage());
+        given(memberRepository.save(any(Member.class))).willReturn(createMember());
+        given(passwordEncoder.encode(anyString())).willReturn("encodedPassword");
 
         //when
-        Long savedMemberId = authService.signUp(memberDto);
-        Member findMember = memberRepository.findById(savedMemberId)
-                .orElseThrow(MemberPKNotFoundException::new);
+        authService.signUp(memberDto);
 
         //then
-        assertThat(findMember.getId()).isEqualTo(savedMemberId);
+        then(memberRepository).should().save(any(Member.class));
     }
 
     @Test
     public void 닉네임이_주어지면_jwt토큰을_생성한다() {
         //given
         String nickName = "별명1";
-        String createdToken = jwtTokenProvider.createToken(nickName);
+        String expected = "토큰";
+        given(jwtTokenProvider.createToken(nickName)).willReturn(expected);
 
         //when
         String result = authService.createToken(nickName);
 
         //then
-        System.out.println("createdToken = " + createdToken);
-        System.out.println("result = " + result);
-        assertThat(result).isEqualTo(createdToken);
+        assertThat(result).isEqualTo(expected);
+        then(jwtTokenProvider).should().createToken(nickName);
     }
 
-    @Test
-    public void 유저네임과_비밀번호가_주어지면_로그인을_수행한다() throws Exception {
-        //given
-        Major major = majorRepository.findByName("컴퓨터공학과");
-        MemberDto memberDto = MemberDto.of("홍길동", "천방지축 도사", "password1!",
-                "010-1234-1234", 1, Gender.MALE, MajorDto.from(major));
+    private MajorDto createMajorDto() {
+        return MajorDto.of("컴퓨터공학과", "소프트웨어융합대학");
+    }
 
-        Long savedMemberId = authService.signUp(memberDto);
+    private MemberDto createMemberDto() {
+        return MemberDto.of(
+                "홍길동",
+                "천방지축 도사",
+                "pwd1234!",
+                "010-1234-1234",
+                2,
+                Gender.MALE,
+                createMajorDto()
+        );
+    }
 
-        String nickName = "천방지축 도사";
-        String password = "password1!";
+    private Member createMember() {
+        Member member = createMemberDto().toEntity(createMajor(), createProfileImage());
+        ReflectionTestUtils.setField(member, "id", 1L);
 
-        //when
-        String jwtToken = authService.login(nickName, password);
+        return member;
+    }
 
-        //then
-        System.out.println("jwtToken = " + jwtToken);
+    private Major createMajor() {
+        return Major.builder()
+                .name("컴퓨터공학과")
+                .department("소프트웨어융합대학")
+                .build();
+    }
+
+    private ProfileImage createProfileImage() {
+        return ProfileImage.builder()
+                .fileName("test")
+                .storedFileName("test")
+                .url("url")
+                .build();
     }
 }

@@ -4,10 +4,12 @@ import com.rainmaker.rainmaker.dto.member.MemberDto;
 import com.rainmaker.rainmaker.dto.member.request.MemberFormRequest;
 import com.rainmaker.rainmaker.entity.Major;
 import com.rainmaker.rainmaker.entity.Member;
+import com.rainmaker.rainmaker.entity.ProfileImage;
 import com.rainmaker.rainmaker.exception.auth.JwtUnauthroziedException;
 import com.rainmaker.rainmaker.exception.member.NickNameNotFoundException;
 import com.rainmaker.rainmaker.repository.MajorRepository;
 import com.rainmaker.rainmaker.repository.MemberRepository;
+import com.rainmaker.rainmaker.repository.ProfileImageRepository;
 import com.rainmaker.rainmaker.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -19,6 +21,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class AuthService {
 
+    private final S3FileService s3FileService;
+    private final ProfileImageRepository profileImageRepository;
     private final MemberRepository memberRepository;
     private final MajorRepository majorRepository;
     private final PasswordEncoder passwordEncoder;
@@ -33,11 +37,19 @@ public class AuthService {
      */
     @Transactional
     public Long signUp(MemberDto memberDto) {
-        // TODO 멤버 프로필 이미지 등록 추가 필요
+        // 프로필 이미지 생성
+        ProfileImage defaultImageFile;
+        if(profileImageRepository.existsDefaultMemberProfileImage()){
+            defaultImageFile = profileImageRepository.getDefaultMemberProfileImage();
+        }else{
+            defaultImageFile = s3FileService.saveMemberDefaultProfileImage();
+        }
 
+        // 학과 조회
         Major major = majorRepository.findByName(memberDto.getMajorDto().getName());
 
-        Member member = memberRepository.save(memberDto.toEntity(major));
+        // 회원가입
+        Member member = memberRepository.save(memberDto.toEntity(major, defaultImageFile));
         member.encodePassword(passwordEncoder);
         member.addUserAuthority();
 

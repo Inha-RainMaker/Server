@@ -16,8 +16,9 @@ import javax.validation.constraints.NotNull;
 public class Member extends BaseTimeEntity {
 
     @Builder
-    public Member(Major major, String password, String userName, String nickName, int grade, Gender gender, Role role, String phone, Mbti mbti) {
+    public Member(Major major, ProfileImage profileImage, String password, String userName, String nickName, int grade, Gender gender, Role role, String phone, Mbti mbti) {
         this.major = major;
+        this.profileImage = profileImage;
         this.password = password;
         this.userName = userName;
         this.nickName = nickName;
@@ -39,8 +40,8 @@ public class Member extends BaseTimeEntity {
     @NotNull
     private Major major;
 
-    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "profile_image_id")
+    @OneToOne(fetch = FetchType.LAZY)
     private ProfileImage profileImage;
 
     @Column(length = 15, unique = true)

@@ -4,6 +4,7 @@ import com.rainmaker.rainmaker.dto.major.MajorDto;
 import com.rainmaker.rainmaker.entity.Gender;
 import com.rainmaker.rainmaker.entity.Major;
 import com.rainmaker.rainmaker.entity.Member;
+import com.rainmaker.rainmaker.entity.ProfileImage;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -36,8 +37,9 @@ public class MemberDto {
                 member.getPhone(), member.getGrade(), member.getGender(), MajorDto.from(member.getMajor()));
     }
 
-    public Member toEntity(Major major) {
+    public Member toEntity(Major major, ProfileImage profileImage) {
         return Member.builder()
+                .profileImage(profileImage)
                 .major(major)
                 .userName(getUserName())
                 .nickName(getNickName())
