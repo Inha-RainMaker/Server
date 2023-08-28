@@ -44,6 +44,8 @@ dependencies {
 	runtimeOnly 'mysql:mysql-connector-java' // 개발 환경에서 작동 (MySQL)
 	runtimeOnly 'com.h2database:h2'	// 테스트 환경에서 작동 (H2)
 
+	// S3 설정
+	implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
 
 	// Querydsl 추가
 	implementation "com.querydsl:querydsl-jpa"
