@@ -1,8 +1,8 @@
 package com.rainmaker.rainmaker.controller;
 
 import com.rainmaker.rainmaker.dto.common.DataResponse;
-import com.rainmaker.rainmaker.dto.member.request.MemberFormRequest;
 import com.rainmaker.rainmaker.dto.member.request.MemberLoginRequest;
+import com.rainmaker.rainmaker.dto.member.request.MemberSignupRequest;
 import com.rainmaker.rainmaker.dto.member.response.MemberCreateResponse;
 import com.rainmaker.rainmaker.dto.member.response.MemberLoginResponse;
 import com.rainmaker.rainmaker.security.RainMakerPrinciple;
@@ -14,9 +14,11 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 
@@ -30,13 +32,20 @@ public class AuthController {
 
 
     @Operation(
-            summary = "회원가입 API"
+            summary = "회원가입 API",
+            description = "<p>회원 정보를 바탕으로 회원 가입을 진행합니다.</p>" +
+                    "<p>이미지 파일을 보내지 않으면, 기본 프로필 이미지로 세팅됩니다.</p>" +
+                    "<p>회원가입에 성공하면 회원가입된 사용자의 pk 를 응답합니다.</p>"
     )
-    @PostMapping("/local/new")
+    @PostMapping(
+            value = "/local/new",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+    )
     public ResponseEntity<DataResponse<MemberCreateResponse>> signup(
-            @Valid @RequestBody MemberFormRequest memberFormRequest
+            @Valid @RequestPart MemberSignupRequest memberSignupRequest,
+            @RequestParam(required = false) MultipartFile imageFile
     ) {
-        Long memberId = authService.signUp(memberFormRequest.toDto());
+        Long memberId = authService.signUp(memberSignupRequest.toDto(), imageFile);
 
         MemberCreateResponse response = MemberCreateResponse.of(memberId);
 

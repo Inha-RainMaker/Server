@@ -1,24 +1,28 @@
 package com.rainmaker.rainmaker.service;
 
 import com.rainmaker.rainmaker.dto.member.MemberDto;
-import com.rainmaker.rainmaker.dto.member.request.MemberFormRequest;
 import com.rainmaker.rainmaker.entity.Major;
 import com.rainmaker.rainmaker.entity.Member;
+import com.rainmaker.rainmaker.entity.ProfileImage;
 import com.rainmaker.rainmaker.exception.auth.JwtUnauthroziedException;
 import com.rainmaker.rainmaker.exception.member.NickNameNotFoundException;
 import com.rainmaker.rainmaker.repository.MajorRepository;
 import com.rainmaker.rainmaker.repository.MemberRepository;
+import com.rainmaker.rainmaker.repository.ProfileImageRepository;
 import com.rainmaker.rainmaker.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class AuthService {
 
+    private final S3FileService s3FileService;
+    private final ProfileImageRepository profileImageRepository;
     private final MemberRepository memberRepository;
     private final MajorRepository majorRepository;
     private final PasswordEncoder passwordEncoder;
@@ -26,18 +30,30 @@ public class AuthService {
 
 
     /**
-     * 회원 정보(){@link MemberFormRequest}를 입력받아
-     *
      * @param memberDto 새로운 회원 정보가 담긴 DTO
+     * @param imageFile 회원의 프로필 이미지
      * @return 생성한 회원의 식별 id
      */
     @Transactional
-    public Long signUp(MemberDto memberDto) {
-        // TODO 멤버 프로필 이미지 등록 추가 필요
+    public Long signUp(MemberDto memberDto, MultipartFile imageFile) {
+        // 프로필 이미지 생성
+        ProfileImage profileImage;
+        if (imageFile == null) { // 기본 프로필 이미지로 설정
+            if (profileImageRepository.existsDefaultMemberProfileImage()) {
+                profileImage = profileImageRepository.getDefaultMemberProfileImage();
+            } else {
+                profileImage = s3FileService.saveMemberDefaultProfileImage();
+            }
+        } else {
+            profileImage = s3FileService.saveFile(imageFile);
+        }
 
+        // 학과 조회
         Major major = majorRepository.findByName(memberDto.getMajorDto().getName());
 
-        Member member = memberRepository.save(memberDto.toEntity(major));
+        // 회원가입
+        Member member = memberRepository.save(memberDto.toEntity(major, profileImage));
+
         member.encodePassword(passwordEncoder);
         member.addUserAuthority();
 
