@@ -34,15 +34,18 @@ public class AuthController {
     @Operation(
             summary = "회원가입 API",
             description = "<p>회원 정보를 바탕으로 회원 가입을 진행합니다.</p>" +
-                    "<p>이미지 파일을 보내지 않으면, 기본 프로필 이미지로 세팅됩니다.</p>" +
+                    "<p>multipart/form-data 형식의 input 을 받습니다.</p>" +
                     "<p>회원가입에 성공하면 회원가입된 사용자의 pk 를 응답합니다.</p>"
     )
     @PostMapping(
             value = "/local/new",
-            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
     )
     public ResponseEntity<DataResponse<MemberCreateResponse>> signup(
+            @Parameter(description = "appliation/json 형식의 회원 정보를 입력받습니다.")
             @Valid @RequestPart MemberSignupRequest memberSignupRequest,
+            @Parameter(description = "이미지 파일을 보내지 않으면, 기본 프로필 이미지로 세팅됩니다.")
             @RequestParam(required = false) MultipartFile imageFile
     ) {
         Long memberId = authService.signUp(memberSignupRequest.toDto(), imageFile);

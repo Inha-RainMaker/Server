@@ -62,7 +62,10 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
+      #      TODO 추후 create 및 sql init 제거 필요
       ddl-auto: create
+    defer-datasource-initialization: true
+  sql.init.mode: always
 
 ---
 # Settings for test
