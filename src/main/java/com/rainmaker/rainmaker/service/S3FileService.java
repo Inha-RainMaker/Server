@@ -28,7 +28,7 @@ public class S3FileService {
     private final ProfileImageRepository profileImageRepository;
 
     private static final String DIR_PATH = "member/";
-    private static final String DEFAULT_PROFILE_IMAGE_NAME = "default-profile-image.jpeg";
+    private static final String DEFAULT_PROFILE_IMAGE_NAME = "default-profile-image.png";
 
     @Value("${cloud.aws.s3.bucket-name}")
     private String bucketName;

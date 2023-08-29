@@ -15,12 +15,12 @@ import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 /**
- * 회원가입 시에 사용하는 Request
+ * 회원가입 시 사용하는 Request
  */
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class MemberFormRequest {
+public class MemberSignupRequest {
     @NotBlank(message = "이름을 입력해주세요")
     @Size(min = 2, message = "이름이 너무 짧습니다.")
     @Schema(example = "홍길동", description = "사용자의 실명")

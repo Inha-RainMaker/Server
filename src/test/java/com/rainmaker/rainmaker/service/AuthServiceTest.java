@@ -1,6 +1,5 @@
 package com.rainmaker.rainmaker.service;
 
-import com.rainmaker.rainmaker.config.S3Config;
 import com.rainmaker.rainmaker.dto.major.MajorDto;
 import com.rainmaker.rainmaker.dto.member.MemberDto;
 import com.rainmaker.rainmaker.entity.Gender;
@@ -16,7 +15,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.context.annotation.Import;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -26,8 +24,6 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 
-
-@Import(S3Config.class)
 @ExtendWith(MockitoExtension.class)
 public class AuthServiceTest {
 
@@ -55,7 +51,7 @@ public class AuthServiceTest {
         given(passwordEncoder.encode(anyString())).willReturn("encodedPassword");
 
         //when
-        authService.signUp(memberDto);
+        authService.signUp(memberDto, null);
 
         //then
         then(memberRepository).should().save(any(Member.class));
