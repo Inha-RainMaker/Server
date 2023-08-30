@@ -46,6 +46,8 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create
+    database: mysql
+    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
     defer-datasource-initialization: true
   sql.init.mode: always
 
@@ -64,6 +66,8 @@ spring:
     hibernate:
       #      TODO 추후 create 및 sql init 제거 필요
       ddl-auto: create
+    database: mysql
+    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
     defer-datasource-initialization: true
   sql.init.mode: always
 
