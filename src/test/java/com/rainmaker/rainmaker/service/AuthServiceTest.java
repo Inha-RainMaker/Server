@@ -18,6 +18,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -48,6 +50,7 @@ public class AuthServiceTest {
         given(profileImageRepository.existsDefaultMemberProfileImage()).willReturn(true);
         given(profileImageRepository.getDefaultMemberProfileImage()).willReturn(createProfileImage());
         given(memberRepository.save(any(Member.class))).willReturn(createMember());
+        given(majorRepository.findByName(anyString())).willReturn(Optional.of(createMajor()));
         given(passwordEncoder.encode(anyString())).willReturn("encodedPassword");
 
         //when
